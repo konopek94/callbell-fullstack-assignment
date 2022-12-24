@@ -1,4 +1,5 @@
 class Api::V1::CardsController < ApplicationController
+  # TODO: use Action Cable to send data to the client app via websocket
   def index
     @cards = Card.order('created_at DESC').all
     render json: @cards, status: 200

@@ -7,6 +7,7 @@ import { CARDS_URL } from '../constants';
 export default function App() {
   const [inputs, setInputs] = useState({});
   // TODO: create custom useFetch hook
+  // TODO: use websocket to listen for real time changes (when webhook controller is fired)
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchCards = async () => {
