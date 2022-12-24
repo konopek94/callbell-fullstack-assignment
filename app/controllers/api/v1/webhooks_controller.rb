@@ -13,11 +13,11 @@ class Api::V1::WebhooksController < ApplicationController
   def create
     raw_post = request.raw_post
     data_parsed = JSON.parse(raw_post)
-    event = data_parsed['action']['type']
-    parsedCard = data_parsed['action']['data']['card']
+    event = data_parsed['action'] && data_parsed['action']['type']
+    parsedCard = data_parsed['action'] && data_parsed['action']['data'] && data_parsed['action']['data']['card']
     case event
     when 'createCard'
-      card = Card.new(remote_trello_card_id: parsedCard['id'], name: parsedCard['name'], list_id: get_list_id)
+      card = Card.where(remote_trello_card_id: parsedCard['id']).first_or_initialize(remote_trello_card_id: parsedCard['id'], name: parsedCard['name'], list_id: get_list_id)
       if card.save
         render json: @card, status: 201
       else
@@ -26,14 +26,18 @@ class Api::V1::WebhooksController < ApplicationController
 
     when 'updateCard'
       card = Card.find_by(remote_trello_card_id: parsedCard['id'])
-      card['name'] = parsedCard['name']
-      card['desc'] = parsedCard['desc'] if parsedCard['desc']
-      card['due'] = parsedCard['due'] if parsedCard['due']
 
-      if card.save
-        render json: @card, status: 200
-      else
-        render json: { error: 'check attributes again', status: 400 }, status: 400
+      if card.present?
+
+        card['name'] = parsedCard['name']
+        card['desc'] = parsedCard['desc'] if parsedCard['desc']
+        card['due'] = parsedCard['due'] if parsedCard['due']
+
+        if card.save
+          render json: @card, status: 200
+        else
+          render json: { error: 'check attributes again', status: 400 }, status: 400
+        end
       end
 
     when 'deleteCard'

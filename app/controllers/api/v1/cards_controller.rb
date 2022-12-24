@@ -25,9 +25,9 @@ class Api::V1::CardsController < ApplicationController
   def create
     trello_card = Trello::Card.create(name: card_params[:name], desc: card_params[:desc], due: card_params[:due],
                                       idList: get_list_id)
+    @card = Card.where(remote_trello_card_id: trello_card.id).first_or_initialize(remote_trello_card_id: trello_card.id, name: card_params[:name], desc: card_params[:desc],
+                                     due: card_params[:due], list_id: get_list_id)
 
-    @card = Card.new(remote_trello_card_id: trello_card.id, name: card_params[:name], desc: card_params[:desc],
-                     due: card_params[:due], list_id: get_list_id)
     if @card.save
       render json: @card, status: :created
     else
