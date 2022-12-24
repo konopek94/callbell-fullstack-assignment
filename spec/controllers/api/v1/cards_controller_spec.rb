@@ -39,7 +39,7 @@ RSpec.describe Api::V1::CardsController, type: :controller do
       expect(response).to have_http_status(400)
     end
     it 'create card if there is no list in Trello' do
-      TODO:
+      # TODO:
     end
   end
 end
