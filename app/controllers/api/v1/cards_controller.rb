@@ -13,7 +13,13 @@ class Api::V1::CardsController < ApplicationController
     board = Trello::Board.find(ENV['TRELLO_BOARD_ID'])
 
     list = board.lists[0]
-    list.id
+
+    if list.present?
+      list.id
+    else
+      list = Trello::List.create board_id: board.id, name: 'Main list'
+      list.id
+    end
   end
 
   def create
